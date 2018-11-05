@@ -3,7 +3,9 @@ import app from './app';
 import MongodbMemoryServer from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import Glossary from './model';
-
+test('should work', () => {
+    expect(true).toBe(true);
+});
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 let server = new MongodbMemoryServer();
@@ -62,6 +64,13 @@ describe('Endpoint tests', () => {
             .post('/api/v1/glossary')
             .send(dummyData)
             .expect(201);
+    });
+
+    it('should faild to create glossary item is required missing', async () => {
+        return await request(app)
+            .post('/api/v1/glossary')
+            .send({ english: 'Yes' })
+            .expect(400);
     });
 
     it('get a glossary item', async () => {

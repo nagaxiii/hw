@@ -22,8 +22,16 @@ export let create = async (req: Request, res: Response) => {
         let newGlossary = await glossary.save();
         // TODO: get server uri from config
         res.set({ Location: `http://localhost/api/v1/glossary/${newGlossary.id}` });
-        res.status(201).send();
+        res.status(201).send(newGlossary);
     } catch (err) {
+        const validationErrors = err.errors;
+        if (validationErrors) {
+            let errors = Object.keys(validationErrors).map(key => {
+                let error = validationErrors[key];
+                return { field: error.path, message: error.message };
+            });
+            return res.status(400).send(errors);
+        }
         res.status(500).send();
     }
 };
@@ -65,7 +73,7 @@ export let destroy = async (req: Request, res: Response) => {
         if (!glossary) {
             return res.status(404).send();
         }
-        res.status(204).send();
+        res.status(204).send(glossary);
     } catch (err) {
         res.status(500).send();
     }
