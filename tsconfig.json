@@ -7,6 +7,7 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
+        "jsx": "react",
         "baseUrl": ".",
         "paths": {
             "*": [
@@ -16,6 +17,6 @@
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*", "webpack.server.config.js"
     ]
 }
