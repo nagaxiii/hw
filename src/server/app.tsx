@@ -14,8 +14,7 @@ const config = dotenv.config();
 
 if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(
-        //TODO: use config
-        'mongodb://localhost:27017/d_hw',
+        process.env.MONGODB_URL || 'mongodb://localhost:27017/d_hw',
         { useNewUrlParser: true },
         err => err && console.error(err)
     );

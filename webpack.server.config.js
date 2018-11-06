@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 let externals = {};
 fs.readdirSync('node_modules')
@@ -10,7 +12,7 @@ fs.readdirSync('node_modules')
 
 module.exports = {
     target: 'node',
-    externals: externals,
+    externals: [externals, nodeExternals()],
     entry: {
         server: './src/server/index.ts'
     },
@@ -19,13 +21,21 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
+                use: [
+                    {
+                        loader: 'ts-loader'
+                        // options: {
+                        //     transpileOnly: true
+                        // }
+                    }
+                ],
                 exclude: /node_modules/
             }
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js'],
+        plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })]
     },
     output: {
         filename: '[name]/index.js',
