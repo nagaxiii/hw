@@ -1,3 +1,4 @@
+import axios from 'axios';
 import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
@@ -9,7 +10,6 @@ import routes from './routes';
 import template from './template';
 import App from '../client/App';
 import createStore from '../client/store';
-
 const config = dotenv.config();
 
 if (process.env.NODE_ENV !== 'test') {
@@ -34,6 +34,17 @@ app.use(express.static('public'));
 app.get('/ping', (req, res) => res.send('pong'));
 
 app.use('/api/v1/glossary', routes);
+
+app.get('/api/v1/glosbe', async (req, res) => {
+    try {
+        const results = await axios.get(
+            `https://glosbe.com/gapi/translate?from=en&dest=de&format=json&phrase=${req.query.english}&pretty=true`
+        );
+        res.send(results.data);
+    } catch (err) {
+        res.status(500).send();
+    }
+});
 
 app.get('/', (req, res) => {
     const store = createStore();

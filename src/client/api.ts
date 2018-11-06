@@ -25,3 +25,8 @@ export function* update(entry: Entry) {
 
     return response.data;
 }
+
+export function* suggest(entry: Entry) {
+    const response = yield call(axios.get, `http://localhost:3000/api/v1/glosbe/?english=${entry.english}`);
+    return response.data;
+}

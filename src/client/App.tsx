@@ -1,18 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose, Dispatch } from 'redux';
-import { GloassaryState } from './reducer';
-import { fetch, destroy, add, Entry, update } from './actions';
+import { GlossaryState } from './reducer';
+import { Entry, add, destroy, fetch, update, suggest, Translation } from './actions';
 
 interface PropsFromDispatch {
     add: typeof add;
     destroy: typeof destroy;
     fetch: typeof fetch;
     update: typeof update;
+    suggest: typeof suggest;
 }
 
 interface PropsFromState {
     entries: Entry[];
+    suggestions: Translation[];
 }
 
 export interface AppProps {}
@@ -76,10 +78,19 @@ export class App extends React.Component<AppProps & PropsFromDispatch & PropsFro
                             />
                         </td>
                         <td>
+                            <button onClick={() => this.props.suggest(this.state as Entry)}>Suggest</button>
                             <button onClick={this.handleAdd}>Add</button>
                         </td>
                     </tr>
-
+                    {this.props.suggestions && (
+                        <tr>
+                            <td colSpan={3}>
+                                {this.props.suggestions.map((suggestion, i) => {
+                                    return <span key={i}>{suggestion.phrase.text}</span>;
+                                })}
+                            </td>
+                        </tr>
+                    )}
                     {this.props.entries.map(entry => {
                         return (
                             <tr key={entry._id}>
@@ -98,9 +109,10 @@ export class App extends React.Component<AppProps & PropsFromDispatch & PropsFro
     };
 }
 
-const mapStateToProps = (state: GloassaryState) => {
+const mapStateToProps = (state: GlossaryState) => {
     return {
-        entries: state.data
+        entries: state.data,
+        suggestions: state.suggestions
     };
 };
 
@@ -110,7 +122,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
             add,
             fetch,
             destroy,
-            update
+            update,
+            suggest
         },
         dispatch
     );

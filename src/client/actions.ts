@@ -7,6 +7,22 @@ export interface Entry {
     __v?: number;
 }
 
+export interface Phrase {
+    text: string;
+    language: string;
+}
+
+export interface Meaning extends Phrase {}
+export interface Translation {
+    phrase: Phrase;
+    meanings: Meaning[];
+}
+
+export interface GlosbeResponse {
+    response: string;
+    tuc: Translation[];
+}
+
 export const enum GlossaryActionTypes {
     FETCH = 'glossary/FETCH',
     FETCH_REQUEST = 'glossary/FETCH_REQUEST',
@@ -23,7 +39,11 @@ export const enum GlossaryActionTypes {
     UPDATE = 'glossary/UPDATE',
     UPDATE_REQUEST = 'glossary/UPDATE_REQUEST',
     UPDATE_SUCCESS = 'glossary/UPDATE_SUCCESS',
-    UPDATE_FAILURE = 'glossary/UPDATE_FAILURE'
+    UPDATE_FAILURE = 'glossary/UPDATE_FAILURE',
+    SUGGEST = 'glossary/SUGGEST',
+    SUGGEST_REQUEST = 'glossary/SUGGEST_REQUEST',
+    SUGGEST_SUCCESS = 'glossary/SUGGEST_SUCCESS',
+    SUGGEST_FAILURE = 'glossary/SUGGEST_FAILURE'
 }
 
 export const fetch = createAction(GlossaryActionTypes.FETCH);
@@ -64,8 +84,20 @@ export const updateAsync = createAsyncAction(
     GlossaryActionTypes.UPDATE_FAILURE
 )<void, Entry, Error>();
 
+export const suggest = createAction(GlossaryActionTypes.SUGGEST, resolve => {
+    return (entry: Entry) => resolve(entry);
+});
+
+export const suggestAsync = createAsyncAction(
+    GlossaryActionTypes.SUGGEST_REQUEST,
+    GlossaryActionTypes.SUGGEST_SUCCESS,
+    GlossaryActionTypes.SUGGEST_FAILURE
+)<void, GlosbeResponse, Error>();
+
 export const GlossaryActions = {
     fetch,
     destroy,
-    add
+    add,
+    update,
+    suggest
 };

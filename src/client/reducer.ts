@@ -1,20 +1,22 @@
 import { Reducer } from 'redux';
 import { getType } from 'typesafe-actions';
-import { Entry, fetchAsync, destroyAsync, addAsync } from './actions';
+import { Entry, fetchAsync, destroyAsync, addAsync, suggestAsync, Translation, GlosbeResponse } from './actions';
 
-export interface GloassaryState {
+export interface GlossaryState {
     readonly loading: boolean;
     readonly data: Entry[];
     readonly errors?: [];
+    readonly suggestions?: Translation[];
 }
 
-export const initialState: GloassaryState = {
+export const initialState: GlossaryState = {
     data: [],
     loading: false,
-    errors: undefined
+    errors: undefined,
+    suggestions: []
 };
 
-export const reducer: Reducer<GloassaryState> = (state = initialState, action) => {
+export const reducer: Reducer<GlossaryState> = (state = initialState, action) => {
     switch (action.type) {
         case getType(fetchAsync.success):
             return {
@@ -30,6 +32,12 @@ export const reducer: Reducer<GloassaryState> = (state = initialState, action) =
             return {
                 ...state,
                 data: [action.payload, ...state.data]
+            };
+        case getType(suggestAsync.success):
+            let glosbe = action.payload as GlosbeResponse;
+            return {
+                ...state,
+                suggestions: glosbe.tuc.filter(entry => entry.phrase)
             };
     }
     return state;
