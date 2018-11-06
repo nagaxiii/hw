@@ -13,7 +13,7 @@ export default function* sagas() {
     ]);
 }
 
-function* getEntries() {
+export function* getEntries() {
     try {
         yield put(fetchAsync.request());
         const items = yield call(api.index);
@@ -23,7 +23,7 @@ function* getEntries() {
     }
 }
 
-function* destroyEntry(action: any) {
+export function* destroyEntry(action: any) {
     try {
         yield put(destroyAsync.request());
         yield call(api.destroy, action.payload as Entry);
@@ -33,7 +33,7 @@ function* destroyEntry(action: any) {
     }
 }
 
-function* addEntry(action: any) {
+export function* addEntry(action: any) {
     try {
         yield put(addAsync.request());
         const entry = yield call(api.add, action.payload as Entry);
@@ -43,7 +43,7 @@ function* addEntry(action: any) {
     }
 }
 
-function* updateEntry(action: any) {
+export function* updateEntry(action: any) {
     try {
         yield put(updateAsync.request());
         const entry = yield call(api.update, action.payload as Entry);
@@ -53,7 +53,7 @@ function* updateEntry(action: any) {
     }
 }
 
-function* suggestEntry(action: any) {
+export function* suggestEntry(action: any) {
     try {
         yield put(suggestAsync.request());
         const response = yield call(api.suggest, action.payload as Entry);
