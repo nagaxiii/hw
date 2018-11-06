@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose, Dispatch } from 'redux';
 import { GlossaryState } from './reducer';
 import { Entry, add, destroy, fetch, update, suggest, Translation } from './actions';
+import { EditableEntry } from './EditableEntry';
 
 interface PropsFromDispatch {
     add: typeof add;
@@ -17,26 +18,32 @@ interface PropsFromState {
     suggestions: Translation[];
 }
 
-export interface AppProps {}
-export interface AppState {
+export interface Props {}
+export interface State {
     english: string;
     german: string;
 }
 
-export class App extends React.Component<AppProps & PropsFromDispatch & PropsFromState, AppState> {
-    readonly state: AppState = {
+export class App extends React.Component<Props & PropsFromDispatch & PropsFromState, State> {
+    readonly state: State = {
         english: '',
         german: ''
     };
     handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
         this.setState({
             [event.currentTarget.name]: event.currentTarget.value
-        } as Pick<AppState, keyof AppState>);
+        } as Pick<State, keyof State>);
     };
 
     handleAdd = () => {
         this.props.add(this.state as Entry);
         this.setState({ english: '', german: '' });
+    };
+
+    handleSuggestionClick = (suggestion: Translation) => {
+        this.setState({
+            german: suggestion.phrase.text
+        });
     };
 
     render = () => {
@@ -86,23 +93,23 @@ export class App extends React.Component<AppProps & PropsFromDispatch & PropsFro
                         <tr>
                             <td colSpan={3}>
                                 {this.props.suggestions.map((suggestion, i) => {
-                                    return <span key={i}>{suggestion.phrase.text}</span>;
+                                    return (
+                                        <span key={i} onClick={() => this.handleSuggestionClick(suggestion)}>
+                                            {suggestion.phrase.text}
+                                        </span>
+                                    );
                                 })}
                             </td>
                         </tr>
                     )}
-                    {this.props.entries.map(entry => {
-                        return (
-                            <tr key={entry._id}>
-                                <td>{entry.english}</td>
-                                <td>{entry.german}</td>
-                                <td>
-                                    <button onClick={() => this.props.update(entry)}>Edit</button>
-                                    <button onClick={() => this.props.destroy(entry)}>Delete</button>
-                                </td>
-                            </tr>
-                        );
-                    })}
+                    {this.props.entries.map(entry => (
+                        <EditableEntry
+                            key={entry._id}
+                            entry={entry}
+                            update={this.props.update}
+                            destroy={this.props.destroy}
+                        />
+                    ))}
                 </tbody>
             </table>
         );

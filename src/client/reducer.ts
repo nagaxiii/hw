@@ -1,6 +1,15 @@
 import { Reducer } from 'redux';
 import { getType } from 'typesafe-actions';
-import { Entry, fetchAsync, destroyAsync, addAsync, suggestAsync, Translation, GlosbeResponse } from './actions';
+import {
+    Entry,
+    fetchAsync,
+    destroyAsync,
+    addAsync,
+    suggestAsync,
+    Translation,
+    GlosbeResponse,
+    updateAsync
+} from './actions';
 
 export interface GlossaryState {
     readonly loading: boolean;
@@ -32,6 +41,17 @@ export const reducer: Reducer<GlossaryState> = (state = initialState, action) =>
             return {
                 ...state,
                 data: [action.payload, ...state.data]
+            };
+
+        case getType(updateAsync.success):
+            return {
+                ...state,
+                data: state.data.map(entry => {
+                    if (entry._id === action.payload._id) {
+                        return { ...action.payload };
+                    }
+                    return entry;
+                })
             };
         case getType(suggestAsync.success):
             let glosbe = action.payload as GlosbeResponse;
