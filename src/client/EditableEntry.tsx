@@ -1,4 +1,8 @@
 import * as React from 'react';
+import Button from '@material-ui/core/Button';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TextField from '@material-ui/core/TextField';
 import { Entry } from './actions';
 
 export interface Props {
@@ -20,7 +24,7 @@ export class EditableEntry extends React.Component<Props, State> {
         german: ''
     };
 
-    handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+    handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
             [event.currentTarget.name]: event.currentTarget.value
         } as Pick<State, Exclude<keyof State, 'isEditing'>>);
@@ -44,51 +48,39 @@ export class EditableEntry extends React.Component<Props, State> {
         return { _id: entry._id, english, german } as Entry;
     };
 
-    renderStaticEntry = (entry: Entry) => {
-        return (
-            <tr>
-                <td>{entry.english}</td>
-                <td>{entry.german}</td>
-                <td>
-                    <button onClick={this.handleSelect}>Edit</button>
-                    <button onClick={() => this.props.destroy(entry)}>Delete</button>
-                </td>
-            </tr>
-        );
-    };
-
-    renderDynamicEntry = (entry: Entry) => {
-        return (
-            <tr>
-                <td>
-                    <input
-                        type="text"
-                        value={this.state.english}
-                        name="english"
-                        placeholder="English part"
-                        onChange={e => this.handleInputChange(e)}
-                    />
-                </td>
-                <td>
-                    <input
-                        type="text"
-                        value={this.state.german}
-                        name="german"
-                        placeholder="German part"
-                        onChange={e => this.handleInputChange(e)}
-                    />
-                </td>
-                <td>
-                    <button onClick={() => this.handleUpdate(entry)}>Update</button>
-                    <button onClick={this.handleSelect}>Cancel</button>
-                </td>
-            </tr>
-        );
-    };
-
     render() {
         const { entry } = this.props;
+        const { isEditing, english, german } = this.state;
 
-        return this.state.isEditing ? this.renderDynamicEntry(entry) : this.renderStaticEntry(entry);
+        return (
+            <TableRow>
+                <TableCell>
+                    <TextField
+                        type="text"
+                        name="english"
+                        value={isEditing ? english : entry.english}
+                        onChange={this.handleInputChange}
+                        margin="normal"
+                        disabled={!isEditing}
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        type="text"
+                        name="german"
+                        value={isEditing ? german : entry.german}
+                        onChange={this.handleInputChange}
+                        margin="normal"
+                        disabled={!isEditing}
+                    />
+                </TableCell>
+                <TableCell>
+                    {isEditing && <Button onClick={() => this.handleUpdate(entry)}>Update</Button>}
+                    {isEditing && <Button onClick={this.handleSelect}>Cancel</Button>}
+                    {!isEditing && <Button onClick={this.handleSelect}>Edit</Button>}
+                    {!isEditing && <Button onClick={() => this.props.destroy(entry)}>Delete</Button>}
+                </TableCell>
+            </TableRow>
+        );
     }
 }
